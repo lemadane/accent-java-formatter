@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as vscode from 'vscode';
 
 describe(
-  'A Java Formatter E2E Test Suite (Rules 1-10)',
+  'Accent Java Formatter E2E Test Suite (Rules 1-10)',
   () => {
       let testDoc: vscode.TextDocument;
       let testEditor: vscode.TextEditor;
@@ -1407,7 +1407,6 @@ describe(
               'Long assignment RHS ternary must align 4-space indented lines 2, 3, and 4 without blank lines');
         });
   });
-
 
 
 

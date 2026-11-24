@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 describe(
-  'A Java Formatter Test Suite',
+  'Accent Java Formatter Test Suite',
   () => {
       it(
         'organizeJavaImports should sort and group Java imports correctly',
@@ -226,5 +226,4 @@ describe(
             }
         });
   });
-
 

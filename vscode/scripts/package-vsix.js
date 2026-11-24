@@ -10,7 +10,7 @@ const pkg = JSON.parse(
   readFileSync(
     pkgPath,
     'utf8'));
-const outFile = `a-java-formatter-${pkg.version}.vsix`;
+const outFile = `accent-java-formatter-${pkg.version}.vsix`;
 
 const result = spawnSync(
   'npx',

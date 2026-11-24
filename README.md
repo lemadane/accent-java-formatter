@@ -1,13 +1,13 @@
-# A Java Formatter (VS Code & IntelliJ IDEA)
+# Accent Java Formatter (VS Code & IntelliJ IDEA)
 
 [![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/34525.svg?label=JetBrains%20Marketplace)](https://plugins.jetbrains.com/plugin/34525)
 
 > Enterprise-grade Java Code Formatter for **Visual Studio Code** and **IntelliJ IDEA** (Plugin ID: `34525`), implementing standardized A Java Code Style rules.
 
 > [!IMPORTANT]
-> **Release v0.9.11**: Fits assignment call headers within 70 columns including indentation; longer headers move `= call(` onto a continuation line with arguments indented one level further. Keeps generic bounds such as `<E extends Enum<E>>` together in both editors while preserving inheritance and `throws` clause wrapping. Uses Ube’s indentation scheme in both editors: four-space blocks and independent two-space continuations, alongside recursive call and chain formatting. Strings, character literals, text blocks, and comments are protected throughout formatting. Both implementations use the same regression fixtures for structural layout, token preservation, and repeat-format stability.
+> **Release v0.1.0**: Fits assignment call headers within 70 columns including indentation; longer headers move `= call(` onto a continuation line with arguments indented one level further. Keeps generic bounds such as `<E extends Enum<E>>` together in both editors while preserving inheritance and `throws` clause wrapping. Uses Ube’s indentation scheme in both editors: four-space blocks and independent two-space continuations, alongside recursive call and chain formatting. Strings, character literals, text blocks, and comments are protected throughout formatting. Both implementations use the same regression fixtures for structural layout, token preservation, and repeat-format stability.
 
-The **A Java Formatter** brings standardized Java code formatting, independent two-space continuation indentation, Eclipse JDT XML profile compatibility, intelligent import organization, and configurable code styles directly to Visual Studio Code and IntelliJ IDEA.
+The **Accent Java Formatter** brings standardized Java code formatting, independent two-space continuation indentation, Eclipse JDT XML profile compatibility, intelligent import organization, and configurable code styles directly to Visual Studio Code and IntelliJ IDEA.
 
 ---
 
@@ -40,14 +40,14 @@ The **A Java Formatter** brings standardized Java code formatting, independent t
 
 #### Option 1: Via Terminal (Quickest) 🚀
 ```bash
-code --install-extension /home/lem/Projects/a-java-formatter/vscode/a-java-formatter-0.9.11.vsix
+code --install-extension /home/lem/Projects/accent-java-formatter/vscode/accent-java-formatter-0.1.0.vsix
 ```
 
 #### Option 2: Via VS Code GUI 🖥️
 1. Open **Visual Studio Code**.
 2. Open the **Extensions** panel (`Ctrl+Shift+X` or `Cmd+Shift+X`).
 3. Click the `...` menu in the top-right corner of the Extensions panel -> **Install from VSIX...**.
-4. Select `a-java-formatter-0.9.11.vsix`.
+4. Select `accent-java-formatter-0.1.0.vsix`.
 
 ---
 
@@ -57,7 +57,7 @@ code --install-extension /home/lem/Projects/a-java-formatter/vscode/a-java-forma
 1. Open **IntelliJ IDEA**.
 2. Go to **Settings/Preferences** (`Ctrl+Alt+S` or `Cmd+,`) -> **Plugins**.
 3. Click the gear icon next to the "Installed" tab -> **Install Plugin from Disk...**.
-4. Choose `a-java-formatter-intellij-0.9.11.zip` (located in `intellij/build/distributions/`).
+4. Choose `accent-java-formatter-0.1.0.zip` (located in `intellij/build/distributions/`).
 5. Click **Apply** and restart IntelliJ IDEA.
 
 ---
@@ -93,7 +93,7 @@ Configure options in `.vscode/settings.json` or the VS Code Settings UI:
   "accentureJava.format.imports.organizeOnFormat": true,
   "accentureJava.format.formatOnChange": false,
   "accentureJava.format.onSave": true,
-  "accentureJava.format.settings.url": ".vscode/a-java-formatter.xml"
+  "accentureJava.format.settings.url": ".vscode/accent-java-formatter.xml"
 }
 ```
 
@@ -144,7 +144,7 @@ export JAVA_HOME=/path/to/jdk-21
 ```bash
 cd vscode
 npm run compile
-npx vsce package --out a-java-formatter-0.9.11.vsix
+npx vsce package --out accent-java-formatter-0.1.0.vsix
 ```
 
 ### IntelliJ Plugin ZIP Package
@@ -153,7 +153,7 @@ cd intellij
 export JAVA_HOME=/path/to/jdk-21
 ./gradlew buildPlugin
 ```
-Output artifact: `intellij/build/distributions/a-java-formatter-intellij-0.9.11.zip`
+Output artifact: `intellij/build/distributions/accent-java-formatter-0.1.0.zip`
 
 ---
 

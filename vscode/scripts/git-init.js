@@ -55,7 +55,7 @@ async function initGitRepo() {
               name: 'A Developer',
               email: 'dev@accenture.com'
           },
-          message: 'Initial commit: A Java Formatter v1.0.0 with 2-space default indentation and format-on-change support'
+          message: 'Initial commit: Accent Java Formatter v1.0.0 with 2-space default indentation and format-on-change support'
       });
     console.log(
       'Git repository initialized successfully! Commit SHA:',

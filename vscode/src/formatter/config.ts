@@ -170,7 +170,7 @@ export function getFormatterConfig(
               xmlOverrides);
         } catch (err) {
             console.warn(
-              `[A Java Formatter] Failed to load XML config from ${config.xmlSettingsUrl}:`,
+              `[Accent Java Formatter] Failed to load XML config from ${config.xmlSettingsUrl}:`,
               err);
         }
     }

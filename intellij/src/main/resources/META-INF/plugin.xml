@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>com.accenture.java.formatter</id>
-    <name>A Java Formatter</name>
+    <name>Accent Java Formatter</name>
     <vendor email="support@accenture.com" url="https://accenture.com">LemuelAdane</vendor>
 
     <description><![CDATA[

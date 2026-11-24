@@ -11,7 +11,7 @@ let statusBarItem: vscode.StatusBarItem;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log(
-      '[A Java Formatter] Extension activated successfully.');
+      '[Accent Java Formatter] Extension activated successfully.');
     const JAVA_SELECTOR: vscode.DocumentSelector = [
     {
         scheme: 'file',
@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (!editor
               || editor.document.languageId !== 'java') {
                 vscode.window.showWarningMessage(
-                  'A Java Formatter: Please open a Java file to format.');
+                  'Accent Java Formatter: Please open a Java file to format.');
                 return;
             }
             const edits =
@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
                   edits);
                 await vscode.workspace.applyEdit(workspaceEdit);
                 vscode.window.showInformationMessage(
-                  'A Java Formatter: Document formatted cleanly.');
+                  'Accent Java Formatter: Document formatted cleanly.');
             }
         }));
     context.subscriptions.push(
@@ -91,7 +91,7 @@ export function activate(context: vscode.ExtensionContext) {
               || editor.document.languageId !== 'java'
               || editor.selection.isEmpty) {
                 vscode.window.showWarningMessage(
-                  'A Java Formatter: Please select Java code to format.');
+                  'Accent Java Formatter: Please select Java code to format.');
                 return;
             }
             const edits =
@@ -120,7 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (!editor
               || editor.document.languageId !== 'java') {
                 vscode.window.showWarningMessage(
-                  'A Java Formatter: Please open a Java file to organize imports.');
+                  'Accent Java Formatter: Please open a Java file to organize imports.');
                 return;
             }
             const text = editor.document.getText();
@@ -143,7 +143,7 @@ export function activate(context: vscode.ExtensionContext) {
                   result.importsText);
                 await vscode.workspace.applyEdit(workspaceEdit);
                 vscode.window.showInformationMessage(
-                  'A Java Formatter: Java imports organized.');
+                  'Accent Java Formatter: Java imports organized.');
             }
         }));
     context.subscriptions.push(
@@ -154,7 +154,7 @@ export function activate(context: vscode.ExtensionContext) {
             const selected = await vscode.window.showQuickPick(
               profiles,
               {
-                  placeHolder: 'Select A Java Formatter Profile'
+                  placeHolder: 'Select Accent Java Formatter Profile'
               });
             if (selected) {
                 const config = vscode.workspace.getConfiguration(
@@ -164,7 +164,7 @@ export function activate(context: vscode.ExtensionContext) {
                   selected,
                   vscode.ConfigurationTarget.Global);
                 vscode.window.showInformationMessage(
-                  `A Java Formatter: Switched style profile to "${selected}".`);
+                  `Accent Java Formatter: Switched style profile to "${selected}".`);
                 updateStatusBarItem(vscode.window.activeTextEditor);
             }
         }));
@@ -177,7 +177,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (!workspaceFolders
               || workspaceFolders.length === 0) {
                 vscode.window.showErrorMessage(
-                  'A Java Formatter: Open a workspace folder first to export configuration XML.');
+                  'Accent Java Formatter: Open a workspace folder first to export configuration XML.');
                 return;
             }
             const vscodeDir = path.join(
@@ -192,7 +192,7 @@ export function activate(context: vscode.ExtensionContext) {
             }
             const targetPath = path.join(
               vscodeDir,
-              'a-java-formatter.xml');
+              'accent-java-formatter.xml');
             const xmlContent = generateAccentureXmlConfig();
             fs.writeFileSync(
               targetPath,
@@ -202,7 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
               targetPath);
             await vscode.window.showTextDocument(doc);
             vscode.window.showInformationMessage(
-              `A Java Formatter XML profile created at ${targetPath}`);
+              `Accent Java Formatter XML profile created at ${targetPath}`);
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
@@ -212,10 +212,10 @@ export function activate(context: vscode.ExtensionContext) {
               '[java]');
             await javaConfig.update(
               'editor.defaultFormatter',
-              'accenture.a-java-formatter',
+              'accent-java-formatter',
               vscode.ConfigurationTarget.Global);
             vscode.window.showInformationMessage(
-              'A Java Formatter is now set as the default Java formatter in VS Code.');
+              'Accent Java Formatter is now set as the default Java formatter in VS Code.');
         }));
     // 6. Format on Save Handler
     context.subscriptions.push(
@@ -299,7 +299,7 @@ function updateStatusBarItem(
         const config = getFormatterConfig(editor.document);
         statusBarItem.text = `$(code) A Java: ${config.preset}`;
         statusBarItem.tooltip =
-          'Click to switch A Java Formatter style profile';
+          'Click to switch Accent Java Formatter style profile';
         statusBarItem.show();
     } else {
         statusBarItem.hide();

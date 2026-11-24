@@ -1,8 +1,8 @@
 {
-  "name": "a-java-formatter",
-  "displayName": "A Java Formatter",
-  "description": "Enterprise-grade Java code formatting extension for Visual Studio Code, inspired by Language Support for Java(TM) by Red Hat.",
-  "version": "0.9.11",
+  "name": "accent-java-formatter",
+  "displayName": "Accent Java Formatter",
+  "description": "Enterprise-grade Java code formatting extension for Visual Studio Code.",
+  "version": "0.1.0",
   "publisher": "LemuelAdane",
   "repository": {
     "type": "git",
@@ -34,43 +34,43 @@
     "commands": [
       {
         "command": "accentureJava.format.document",
-        "title": "A Java Formatter: Format Document",
+        "title": "Accent Java Formatter: Format Document",
         "category": "Java Formatter"
       },
       {
         "command": "accentureJava.format.selection",
-        "title": "A Java Formatter: Format Selection",
+        "title": "Accent Java Formatter: Format Selection",
         "category": "Java Formatter"
       },
       {
         "command": "accentureJava.format.organizeImports",
-        "title": "A Java Formatter: Organize Imports",
+        "title": "Accent Java Formatter: Organize Imports",
         "category": "Java Formatter"
       },
       {
         "command": "accentureJava.format.selectProfile",
-        "title": "A Java Formatter: Select Formatting Profile",
+        "title": "Accent Java Formatter: Select Formatting Profile",
         "category": "Java Formatter"
       },
       {
         "command": "accentureJava.format.exportConfig",
-        "title": "A Java Formatter: Export Default A Formatter XML Config",
+        "title": "Accent Java Formatter: Export Default Formatter XML Config",
         "category": "Java Formatter"
       },
       {
         "command": "accentureJava.format.setAsDefault",
-        "title": "A Java Formatter: Set as Default Java Formatter",
+        "title": "Accent Java Formatter: Set as Default Java Formatter",
         "category": "Java Formatter"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "A Java Formatter",
+      "title": "Accent Java Formatter",
       "properties": {
         "accentureJava.format.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable or disable A Java Formatter for Java files."
+          "description": "Enable or disable Accent Java Formatter for Java files."
         },
         "accentureJava.format.preset": {
           "type": "string",
@@ -126,7 +126,7 @@
         "accentureJava.format.formatOnChange": {
           "type": "boolean",
           "default": false,
-          "description": "Automatically trigger A Java Formatter when Java code changes in the editor."
+          "description": "Automatically trigger Accent Java Formatter when Java code changes in the editor."
         },
         "accentureJava.format.continuationIndent": {
           "type": "integer",

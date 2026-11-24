@@ -44,6 +44,7 @@ lerna-debug.log*
 /intellij/*.iws
 /intellij/*.iml
 /intellij/*.ipr
+/intellij/*.zip
 
 # -----------------------------------
 # VS Code extension project (vscode/)
@@ -53,6 +54,7 @@ lerna-debug.log*
 /vscode/dist/
 /vscode/bin/
 /vscode/*.tsbuildinfo
+/vscode/*.vsix
 
 /vscode/.vscode-test/
 /vscode/.vscode-test.mjs

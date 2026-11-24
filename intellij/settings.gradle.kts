@@ -1,1 +1,1 @@
-rootProject.name = "a-java-formatter-intellij"
+rootProject.name = "accent-java-formatter"

@@ -143,7 +143,7 @@ Module.prototype.require = function(request: string) {
                     if (cmd === 'accentureJava.format.setAsDefault') {
                         configStore.set(
                           '[java].editor.defaultFormatter',
-                          'accenture.a-java-formatter');
+                          'accent-java-formatter');
                         return;
                     }
                     if (!activeEditor) return;
