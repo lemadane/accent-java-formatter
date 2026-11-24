@@ -83,17 +83,17 @@ Configure options in `.vscode/settings.json` or the VS Code Settings UI:
 
 ```json
 {
-  "accentureJava.format.enabled": true,
-  "accentureJava.format.preset": "A Standard",
-  "accentureJava.format.tabSize": 4,
-  "accentureJava.format.continuationIndent": 2,
-  "accentureJava.format.insertSpaces": true,
-  "accentureJava.format.maxLineLength": 70,
-  "accentureJava.format.comments.enabled": true,
-  "accentureJava.format.imports.organizeOnFormat": true,
-  "accentureJava.format.formatOnChange": false,
-  "accentureJava.format.onSave": true,
-  "accentureJava.format.settings.url": ".vscode/accent-java-formatter.xml"
+  "accent.java.format.enabled": true,
+  "accent.java.format.preset": "A Standard",
+  "accent.java.format.tabSize": 4,
+  "accent.java.format.continuationIndent": 2,
+  "accent.java.format.insertSpaces": true,
+  "accent.java.format.maxLineLength": 70,
+  "accent.java.format.comments.enabled": true,
+  "accent.java.format.imports.organizeOnFormat": true,
+  "accent.java.format.formatOnChange": false,
+  "accent.java.format.onSave": true,
+  "accent.java.format.settings.url": ".vscode/accent-java-formatter.xml"
 }
 ```
 
@@ -114,7 +114,7 @@ blocks are expanded. Java annotations and generic argument lists remain intact.
 
 Both editors default to four-space blocks and two-space continuation steps. Continuations
 are measured in columns independently of block width, including when indentation uses tabs.
-VS Code exposes `accentureJava.format.continuationIndent` separately from `tabSize`;
+VS Code exposes `accent.java.format.continuationIndent` separately from `tabSize`;
 explicit user block-width settings and other presets still take precedence over defaults.
 The IntelliJ formatter configuration uses the same independent `continuationIndent` value.
 Six additional shared fixtures in `formatting-parity/indentation/` cover these defaults;

@@ -11,7 +11,7 @@ export class JavaFormattingEditProvider implements vscode.DocumentFormattingEdit
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         const config = getFormatterConfig(document);
         // Only use options as fallback if tabSize is not specified
-        const userTabSizeSetting = vscode.workspace.getConfiguration('accentureJava.format', document.uri).get<number>('tabSize');
+        const userTabSizeSetting = vscode.workspace.getConfiguration('accent.java.format', document.uri).get<number>('tabSize');
         if (userTabSizeSetting === undefined && options.tabSize) {
             config.tabSize = options.tabSize;
         }
@@ -39,7 +39,7 @@ export class JavaFormattingEditProvider implements vscode.DocumentFormattingEdit
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.TextEdit[]> {
         const config = getFormatterConfig(document);
-        const userTabSizeSetting = vscode.workspace.getConfiguration('accentureJava.format', document.uri).get<number>('tabSize');
+        const userTabSizeSetting = vscode.workspace.getConfiguration('accent.java.format', document.uri).get<number>('tabSize');
         if (userTabSizeSetting === undefined && options.tabSize) {
             config.tabSize = options.tabSize;
         }

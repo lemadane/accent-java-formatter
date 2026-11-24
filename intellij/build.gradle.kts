@@ -4,7 +4,7 @@ plugins {
     id("org.jetbrains.intellij.platform") version "2.0.0"
 }
 
-group = "com.accenture"
+group = "com.accent"
 version = "0.1.0"
 
 repositories {

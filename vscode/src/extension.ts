@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { JavaFormattingEditProvider } from './providers/javaFormattingProvider';
 import { JavaCodeActionProvider } from './providers/codeActionProvider';
-import { getFormatterConfig, generateAccentureXmlConfig, PRESET_CONFIGS } from './formatter/config';
+import { getFormatterConfig, generateAccentXmlConfig, PRESET_CONFIGS } from './formatter/config';
 import { JavaFormatter } from './formatter/javaFormatter';
 import { organizeJavaImports } from './formatter/organizeImports';
 
@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Right,
       100);
-    statusBarItem.command = 'accentureJava.format.selectProfile';
+    statusBarItem.command = 'accent.java.format.selectProfile';
     context.subscriptions.push(statusBarItem);
     updateStatusBarItem(vscode.window.activeTextEditor);
     context.subscriptions.push(
@@ -54,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
     // 5. Register Commands
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.document',
+        'accent.java.format.document',
         async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor
@@ -84,7 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.selection',
+        'accent.java.format.selection',
         async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor
@@ -114,7 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.organizeImports',
+        'accent.java.format.organizeImports',
         async () => {
             const editor = vscode.window.activeTextEditor;
             if (!editor
@@ -148,7 +148,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.selectProfile',
+        'accent.java.format.selectProfile',
         async () => {
             const profiles = Object.keys(PRESET_CONFIGS);
             const selected = await vscode.window.showQuickPick(
@@ -158,7 +158,7 @@ export function activate(context: vscode.ExtensionContext) {
               });
             if (selected) {
                 const config = vscode.workspace.getConfiguration(
-                  'accentureJava.format');
+                  'accent.java.format');
                 await config.update(
                   'preset',
                   selected,
@@ -170,7 +170,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.exportConfig',
+        'accent.java.format.exportConfig',
         async () => {
             const workspaceFolders =
               vscode.workspace.workspaceFolders;
@@ -193,7 +193,7 @@ export function activate(context: vscode.ExtensionContext) {
             const targetPath = path.join(
               vscodeDir,
               'accent-java-formatter.xml');
-            const xmlContent = generateAccentureXmlConfig();
+            const xmlContent = generateAccentXmlConfig();
             fs.writeFileSync(
               targetPath,
               xmlContent,
@@ -206,7 +206,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
     context.subscriptions.push(
       vscode.commands.registerCommand(
-        'accentureJava.format.setAsDefault',
+        'accent.java.format.setAsDefault',
         async () => {
             const javaConfig = vscode.workspace.getConfiguration(
               '[java]');
@@ -225,7 +225,7 @@ export function activate(context: vscode.ExtensionContext) {
             const config = getFormatterConfig(event.document);
             if (config.onSave
               || vscode.workspace.getConfiguration(
-                'accentureJava.format',
+                'accent.java.format',
                 event.document.uri)
                 .get(
                   'onSave',

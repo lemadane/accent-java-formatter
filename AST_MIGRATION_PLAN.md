@@ -7,7 +7,7 @@ This phase introduces only architecture and execution planning. No business/form
 
 ## Scope
 - VS Code formatter implementation under `vscode/src/formatter/`
-- IntelliJ formatter implementation under `intellij/src/main/kotlin/com/accenture/formatter/`
+- IntelliJ formatter implementation under `intellij/src/main/kotlin/com/accent/formatter/`
 - Existing rules to preserve:
   - Rule 1 (annotation line placement)
   - Rule 4 (method/constructor parameter wrapping)
@@ -38,18 +38,18 @@ This phase introduces only architecture and execution planning. No business/form
 - Keep existing formatter as fallback engine:
   - `vscode/src/formatter/javaFormatter.ts` (legacy engine)
 - Engine selector (proposed):
-  - config: `accentureJava.format.engine` with values `legacy | ast-preview`
+  - config: `accent.java.format.engine` with values `legacy | ast-preview`
   - default remains `legacy` until parity passes
 
 ### 3) IntelliJ implementation target
 - Introduce modules (proposed):
-  - `intellij/src/main/kotlin/com/accenture/formatter/ast/AstParser.kt`
-  - `intellij/src/main/kotlin/com/accenture/formatter/ast/AstModel.kt`
-  - `intellij/src/main/kotlin/com/accenture/formatter/ast/rules/*`
-  - `intellij/src/main/kotlin/com/accenture/formatter/ast/AstEmitter.kt`
-  - `intellij/src/main/kotlin/com/accenture/formatter/ast/AstFormattingEngine.kt`
+  - `intellij/src/main/kotlin/com/accent/formatter/ast/AstParser.kt`
+  - `intellij/src/main/kotlin/com/accent/formatter/ast/AstModel.kt`
+  - `intellij/src/main/kotlin/com/accent/formatter/ast/rules/*`
+  - `intellij/src/main/kotlin/com/accent/formatter/ast/AstEmitter.kt`
+  - `intellij/src/main/kotlin/com/accent/formatter/ast/AstFormattingEngine.kt`
 - Keep legacy engine:
-  - `AccentureJavaFormatter.kt`
+  - `AccentJavaFormatter.kt`
 - Use feature flag/config to switch only after parity confidence.
 
 ## Parser Strategy

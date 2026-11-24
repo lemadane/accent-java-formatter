@@ -12,7 +12,7 @@ export function organizeJavaImports(codeLines: string[]): OrganizedImportResult 
     const staticImports: string[] = [];
     const javaImports: string[] = [];
     const javaxImports: string[] = [];
-    const accentureImports: string[] = [];
+    const accentImports: string[] = [];
     const orgImports: string[] = [];
     const comImports: string[] = [];
     const otherImports: string[] = [];
@@ -39,8 +39,8 @@ export function organizeJavaImports(codeLines: string[]): OrganizedImportResult 
                     javaImports.push(`import ${fullImport};`);
                 } else if (fullImport.startsWith('javax.') || fullImport.startsWith('jakarta.')) {
                     javaxImports.push(`import ${fullImport};`);
-                } else if (fullImport.startsWith('com.accenture.')) {
-                    accentureImports.push(`import ${fullImport};`);
+                } else if (fullImport.startsWith('com.accent.')) {
+                    accentImports.push(`import ${fullImport};`);
                 } else if (fullImport.startsWith('org.')) {
                     orgImports.push(`import ${fullImport};`);
                 } else if (fullImport.startsWith('com.')) {
@@ -75,7 +75,7 @@ export function organizeJavaImports(codeLines: string[]): OrganizedImportResult 
         uniqueAndSorted(javaxImports),
         uniqueAndSorted(orgImports),
         uniqueAndSorted(comImports),
-        uniqueAndSorted(accentureImports),
+        uniqueAndSorted(accentImports),
         uniqueAndSorted(otherImports)
     ].filter(g => g.length > 0);
 

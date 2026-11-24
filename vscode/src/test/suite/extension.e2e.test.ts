@@ -10,12 +10,12 @@ describe(
       beforeEach(
         async () => {
             await vscode.workspace.getConfiguration(
-              'accentureJava.format')
+              'accent.java.format')
               .update(
                 'tabSize',
                 2);
             await vscode.workspace.getConfiguration(
-              'accentureJava.format')
+              'accent.java.format')
               .update(
                 'continuationIndent',
                 4);
@@ -32,17 +32,17 @@ describe(
             await vscode.commands.executeCommand(
               'workbench.action.closeActiveEditor');
             await vscode.workspace.getConfiguration(
-              'accentureJava.format')
+              'accent.java.format')
               .update(
                 'tabSize',
                 undefined);
             await vscode.workspace.getConfiguration(
-              'accentureJava.format')
+              'accent.java.format')
               .update(
                 'continuationIndent',
                 undefined);
             await vscode.workspace.getConfiguration(
-              'accentureJava.format')
+              'accent.java.format')
               .update(
                 'maxLineLength',
                 undefined);
@@ -51,7 +51,7 @@ describe(
         'E2E Rule 1: Any annotation should sit on its own dedicated line',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             '@Entity @Table(name = "users")',
             'public class User {',
             '  @Autowired @Qualifier("service") private PaymentService service;',
@@ -70,7 +70,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -86,7 +86,7 @@ describe(
         'E2E Bug Fix: Preserve method header prefix when annotations are present inside parameter list',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             '@PostMapping',
             '@Validated',
             'public ResponseEntity<ProductResponse> create(@RequestBody @Validated final CreateProductRequest request) {',
@@ -111,7 +111,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -131,7 +131,7 @@ describe(
         'E2E Rule 4: Method and constructor declarations with >1 argument must be on next line per argument',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class Calculator {',
             '  public int add(int a, int b) {',
             '    return a + b;',
@@ -150,7 +150,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes('public int add('));
@@ -163,7 +163,7 @@ describe(
         'E2E Rule 5: extends, implements, throws must be on the next line together with associated class/interface/exception',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class CustomController extends BaseController implements ControllerInterface throws Exception {',
             '}'
         ].join('\n');
@@ -179,7 +179,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -189,7 +189,7 @@ describe(
         'E2E Rule 6: Method calls under implementation with >1 argument should be on next line per argument',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class PaymentController {',
             '  private PaymentService service;',
             '  public void execute(String id, Double amount) {',
@@ -209,7 +209,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes('service.pay('));
@@ -222,7 +222,7 @@ describe(
         'E2E Rule 9 (Default 70): Single-line assignment between 70-79 chars must wrap RHS onto next line',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class LineLength70Rule {',
             '  public void run() {',
             '    String msg = "Order created for customer account reference and branch code";',
@@ -241,7 +241,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -254,7 +254,7 @@ describe(
             `E2E assignment call: ${headerWidth}-column header includes indentation`,
             async () => {
                 const settings = vscode.workspace.getConfiguration(
-                  'accentureJava.format');
+                  'accent.java.format');
                 await settings.update(
                   'tabSize',
                   4);
@@ -304,12 +304,12 @@ describe(
                       0),
                     input));
                 await vscode.commands.executeCommand(
-                  'accentureJava.format.document');
+                  'accent.java.format.document');
                 assert.strictEqual(
                   testDoc.getText(),
                   expected);
                 await vscode.commands.executeCommand(
-                  'accentureJava.format.document');
+                  'accent.java.format.document');
                 assert.strictEqual(
                   testDoc.getText(),
                   expected,
@@ -320,7 +320,7 @@ describe(
         'E2E assignment call: rejoins an existing break after equals',
         async () => {
             const settings = vscode.workspace.getConfiguration(
-              'accentureJava.format');
+              'accent.java.format');
             await settings.update(
               'tabSize',
               4);
@@ -358,12 +358,12 @@ describe(
                   0),
                 input));
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             assert.strictEqual(
               testDoc.getText(),
               expected);
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             assert.strictEqual(
               testDoc.getText(),
               expected,
@@ -374,7 +374,7 @@ describe(
         async () => {
             // Case A: Multiline assignment split by user (as in screenshot) must be 2x indented
             const multilineInput = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  @PostMapping',
             '  public ResponseEntity<ProductResponse> create(',
@@ -403,7 +403,7 @@ describe(
                     multilineInput);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -415,7 +415,7 @@ describe(
               'URI.create header must join the assignment when it fits');
             // Case B: Single line assignment under 70 chars must NOT be forced onto next line
             const singleLineInput = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class Config {',
             '  public void setup() {',
             '    String shortName = "A";',
@@ -434,7 +434,7 @@ describe(
                     singleLineInput);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const textSingle = testDoc.getText();
             assert.ok(
               textSingle.includes('    String shortName = "A";'),
@@ -444,7 +444,7 @@ describe(
         'E2E Normal Formatting: Normalize missing assignment spaces and excessive parenthesis spaces',
         async () => {
             const messyCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public Object create() {',
             '    final var product = this.productService.create(request);',
@@ -465,7 +465,7 @@ describe(
                     messyCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -480,7 +480,7 @@ describe(
         'E2E URI.create multiline argument: + product.id() should be 2 levels deeper than previous string line',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public Object create() {',
             '    final var location = URI.create(',
@@ -502,7 +502,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -515,7 +515,7 @@ describe(
         'E2E URI.create controller case: + line is indented 4 spaces relative to string line',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  @PostMapping',
             '  public ResponseEntity<ProductResponse> create(',
@@ -544,7 +544,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -557,7 +557,7 @@ describe(
         'E2E Rule 8: On chaining objects, if >=2 chained objects, break each chained call starting from 2nd dot onto next line including dot',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class ResponseHandler {',
             '  public ResponseEntity<String> getResponse() {',
             '    return ResponseEntity.ok().body("Success");',
@@ -576,7 +576,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -604,7 +604,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             assert.strictEqual(
               testDoc.getText(),
               [
@@ -622,7 +622,7 @@ describe(
         'E2E Rule 9: Statements reaching 70 column or more wrap assignment RHS or method arguments onto next line',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class OrderService {',
             '  public void processOrder() {',
             '    String orderDescriptionMessageHeader = "Order successfully created for customer identifier";',
@@ -641,7 +641,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -651,7 +651,7 @@ describe(
         'E2E Rule 8 & Argument Indentation: Multiline arguments inside .map and .orElseGet chained calls must be 2x indented',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public Object getProduct(final UUID id) {',
             '    return this.productService.getById(id)',
@@ -675,7 +675,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes('        .map('));
@@ -693,7 +693,7 @@ describe(
         'E2E 2-State Testing (State 1): .notFound() and .build() indented 2x (12 spaces) below .orElseGet(() -> ResponseEntity',
         async () => {
             const state1Input = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  @GetMapping("/{id}")',
             '  public ResponseEntity<ProductResponse> getById(@PathVariable final UUID id) {',
@@ -717,7 +717,7 @@ describe(
                     state1Input);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -731,7 +731,7 @@ describe(
         'E2E 2-State Testing (State 2): () -> ResponseEntity on new line (12 spaces) and .notFound()/.build() indented 2x (16 spaces) below it',
         async () => {
             const state2Input = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  @GetMapping("/{id}")',
             '  public ResponseEntity<ProductResponse> getById(@PathVariable final UUID id) {',
@@ -756,7 +756,7 @@ describe(
                     state2Input);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -770,7 +770,7 @@ describe(
         'E2E Indentation Rules: 2-space base block indentation and 2x continuation indentation for multiline assignment RHS',
         async () => {
             const inputCode = [
-            'package com.accenture.indentation;',
+            'package com.accent.indentation;',
             'public class IndentationDemo {',
             '  public void process() {',
             '    final var product =',
@@ -791,7 +791,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             // 1. Level 1 (Class Body) = 2 spaces
             assert.ok(
@@ -819,7 +819,7 @@ describe(
         'E2E Assignment Bug 1: Missing space after equal sign must be normalized',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class TestClass {',
             '  public void test() {',
             '    final var product =productService.create(request);',
@@ -838,7 +838,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -849,7 +849,7 @@ describe(
         'E2E Assignment Bug 2: Missing space before equal sign must be normalized',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class TestClass {',
             '  public void test() {',
             '    final var location= URI.create("/api/products");',
@@ -868,7 +868,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -879,7 +879,7 @@ describe(
         'E2E Assignment Bug 3: Equal sign and RHS starting on next line must be 2x indented (4 spaces)',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class TestClass {',
             '  public void test() {',
             '    final var product',
@@ -900,7 +900,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -911,7 +911,7 @@ describe(
         'E2E Assignment Bug 4: Wrapped call header rejoins assignment when it fits',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class TestClass {',
             '  public void test() {',
             '    final var product =',
@@ -932,7 +932,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -943,7 +943,7 @@ describe(
         'E2E SQL String Bug: SQL queries containing equal sign must not be treated as Java assignment statements',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class SqlQueryTest {',
             '  public void executeQuery() {',
             '    String sql = "select * from table a where size = 10 limit 5";',
@@ -963,7 +963,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -978,7 +978,7 @@ describe(
         'E2E Annotation Arguments: Annotations with >1 arguments must format multiline (1 per line)',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             '@Table(name = "users", schema = "public")',
             'public class User {',
             '  @Column(name = "id", nullable = false, unique = true)',
@@ -999,7 +999,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1017,7 +1017,7 @@ describe(
         'E2E Method Argument String Bug: System.out.println with equal sign in string argument reaching 70 chars wraps argument onto next line',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class PrintlnTest {',
             '  public void printLog(UUID id) {',
             '    System.out.println("Hello! This is before formatting = with formatted id: " + id);',
@@ -1036,7 +1036,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1047,7 +1047,7 @@ describe(
         'E2E Rule 10: Automatic formatting is triggered on document save',
         async () => {
             const unformattedCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class SaveTest{',
             'public void run(){',
             'System.out.println("Save Test");',
@@ -1066,7 +1066,7 @@ describe(
                     unformattedCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes('public class SaveTest {'));
@@ -1077,7 +1077,7 @@ describe(
         'E2E Rule 4/9: Method declaration with 1 single parameter exceeding 70 columns must wrap parameter onto next line',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ExceptionHandlerController {',
             '  @ExceptionHandler(MethodArgumentNotValidException.class)',
             '  public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(final MethodArgumentNotValidException exception) {',
@@ -1097,7 +1097,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1109,7 +1109,7 @@ describe(
         'E2E Ternary Operators: Long ternary statements must split into 3 clean lines at ? and : without breaking chained methods inside branches',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public void update(Request request, Product existingProduct) {',
             '    final String name = request.name()                !=        null ? request.name() : existingProduct.name();',
@@ -1130,7 +1130,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1155,7 +1155,7 @@ describe(
         'E2E Ternary Operators: Broken multiline ternary statements from editor must be re-joined and formatted into 3 clean lines',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public void update(Request request, Product existingProduct) {',
             '    final String name =',
@@ -1185,7 +1185,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1210,7 +1210,7 @@ describe(
         'E2E Idempotency: Formatting twice (2x) must produce the exact same clean code as formatting once (1x) for long annotations',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             '@RequestMapping("/api/products/api/products/api/products/api/products/api/products")',
             'public record ProductController() {}'
         ].join('\n');
@@ -1227,11 +1227,11 @@ describe(
               });
             // Format Pass 1
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const firstPassText = testDoc.getText();
             // Format Pass 2
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const secondPassText = testDoc.getText();
             assert.strictEqual(
               secondPassText,
@@ -1245,7 +1245,7 @@ describe(
         'E2E Rule 1/9: Annotation with long single argument exceeding 70 columns wraps argument onto next line idempotently',
         async () => {
             const inputCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             '@RequestMapping("/api/products/api/products/api/products/api/products/api/products")',
             'public record ProductController() {}'
         ].join('\n');
@@ -1262,10 +1262,10 @@ describe(
               });
             // Format Pass 1
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const firstPassText = testDoc.getText();
             const expectedText = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             '@RequestMapping(',
             '    "/api/products/api/products/api/products/api/products/api/products")',
             'public record ProductController() {}'
@@ -1276,7 +1276,7 @@ describe(
               'Long annotation argument reaching 70 chars must wrap argument onto next line starting with @Annotation(');
             // Format Pass 2 (Idempotency Check)
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const secondPassText = testDoc.getText();
             assert.strictEqual(
               secondPassText,
@@ -1287,7 +1287,7 @@ describe(
         'E2E Text Blocks: Content of Java 15+ multiline text blocks ("""...""") must be treated strictly as literal text',
         async () => {
             const inputCode = [
-            'package com.accenture.service;',
+            'package com.accent.service;',
             'public class SqlService {',
             '  public String getQuery() {',
             '    String sql = """',
@@ -1312,7 +1312,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1326,7 +1326,7 @@ describe(
         'E2E String Literals: Content of single-line strings ("") containing Java syntax operators and keywords must remain untouched',
         async () => {
             const inputCode = [
-            'package com.accenture.service;',
+            'package com.accent.service;',
             'public class StringTest {',
             '  public void printCode() {',
             '    String codeSnippet = "if (a == b) { return a ? b : c; } extends BaseClass";',
@@ -1346,7 +1346,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(
@@ -1357,7 +1357,7 @@ describe(
         'E2E Multiline Ternary Alignment: Ternary assignments with internal blank lines and assignment RHS split format cleanly without stray empty lines',
         async () => {
             const inputCode = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class TernaryTest {',
             '  public void execute(Request request, Product existingProduct) {',
             '    final String name',
@@ -1384,7 +1384,7 @@ describe(
                     inputCode);
               });
             await vscode.commands.executeCommand(
-              'accentureJava.format.document');
+              'accent.java.format.document');
             const text = testDoc.getText();
             assert.ok(
               text.includes(

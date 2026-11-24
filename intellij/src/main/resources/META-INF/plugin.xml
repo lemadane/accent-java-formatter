@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>com.accenture.java.formatter</id>
+    <id>com.accent.java.formatter</id>
     <name>Accent Java Formatter</name>
-    <vendor email="support@accenture.com" url="https://accenture.com">LemuelAdane</vendor>
+    <vendor email="support@accent.com" url="https://accent.com">LemuelAdane</vendor>
 
     <description><![CDATA[
     Enterprise-grade Java code formatting plugin for IntelliJ IDEA, implementing A Java code style rules.
@@ -28,6 +28,6 @@
     <idea-version since-build="233"/>
 
     <extensions defaultExtensionNs="com.intellij">
-        <preFormatProcessor implementation="com.accenture.formatter.AccenturePreFormatProcessor"/>
+        <preFormatProcessor implementation="com.accent.formatter.AccentPreFormatProcessor"/>
     </extensions>
 </idea-plugin>

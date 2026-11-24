@@ -21,7 +21,7 @@ export interface FormatterConfig {
     formatOnChange?: boolean;
 }
 
-export const ACCENTURE_DEFAULT_CONFIG: FormatterConfig = {
+export const ACCENT_DEFAULT_CONFIG: FormatterConfig = {
     tabSize: 4,
     continuationIndent: 2,
     insertSpaces: true,
@@ -80,7 +80,7 @@ export function getFormatterConfig(
         if (typeof vscode !== 'undefined'
           && vscode.workspace) {
             vscodeConfig = vscode.workspace.getConfiguration(
-              'accentureJava.format',
+              'accent.java.format',
               document?.uri);
         }
     } catch (e) {
@@ -233,7 +233,7 @@ export function parseEclipseXmlConfig(
     return overrides;
 }
 
-export function generateAccentureXmlConfig(): string {
+export function generateAccentXmlConfig(): string {
     return `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="12">
     <profile kind="CodeFormatterProfile" name="A Standard Java Profile" version="12">

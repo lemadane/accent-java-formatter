@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { JavaFormatter } from '../../formatter/javaFormatter';
-import { ACCENTURE_DEFAULT_CONFIG, parseEclipseXmlConfig, generateAccentureXmlConfig } from '../../formatter/config';
+import { ACCENT_DEFAULT_CONFIG, parseEclipseXmlConfig, generateAccentXmlConfig } from '../../formatter/config';
 import { organizeJavaImports } from '../../formatter/organizeImports';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -12,9 +12,9 @@ describe(
         'organizeJavaImports should sort and group Java imports correctly',
         () => {
             const inputLines = [
-            'package com.accenture.demo;',
+            'package com.accent.demo;',
             '',
-            'import com.accenture.service.UserService;',
+            'import com.accent.service.UserService;',
             'import java.util.List;',
             'import static org.junit.Assert.assertEquals;',
             'import org.springframework.web.bind.annotation.RestController;',
@@ -36,7 +36,7 @@ describe(
             '',
             'import org.springframework.web.bind.annotation.RestController;',
             '',
-            'import com.accenture.service.UserService;'
+            'import com.accent.service.UserService;'
         ].join('\n');
             assert.strictEqual(
               result.importsText,
@@ -46,7 +46,7 @@ describe(
         'JavaFormatter should format unformatted Java source code cleanly',
         () => {
             const messyCode = [
-            'package com.accenture.demo;',
+            'package com.accent.demo;',
             'import java.util.List;',
             'public class EmployeeService{',
             ' @Override',
@@ -61,7 +61,7 @@ describe(
         ].join('\n');
             const formatter = new JavaFormatter(
               {
-                  ...ACCENTURE_DEFAULT_CONFIG,
+                  ...ACCENT_DEFAULT_CONFIG,
                   tabSize: 2,
                   continuationIndent: 4
               });
@@ -103,7 +103,7 @@ describe(
         ].join('\n');
             const formatter = new JavaFormatter(
               {
-                  ...ACCENTURE_DEFAULT_CONFIG,
+                  ...ACCENT_DEFAULT_CONFIG,
                   tabSize: 2,
                   continuationIndent: 4
               });
@@ -124,9 +124,9 @@ describe(
               formatted.includes('    return version + 2;'));
         });
       it(
-        'generateAccentureXmlConfig should output valid Eclipse profile XML',
+        'generateAccentXmlConfig should output valid Eclipse profile XML',
         () => {
-            const xml = generateAccentureXmlConfig();
+            const xml = generateAccentXmlConfig();
             assert.ok(
               xml.includes('<profiles version="12">'));
             assert.ok(
@@ -139,7 +139,7 @@ describe(
         'JavaFormatter should properly indent multiline arguments inside .map and .orElseGet method calls',
         () => {
             const code = [
-            'package com.accenture.test;',
+            'package com.accent.test;',
             'public class ProductService {',
             '  public Object getProduct(final UUID id) {',
             '    return this.productService.getById(id)',
@@ -153,7 +153,7 @@ describe(
         ].join('\n');
             const formatter = new JavaFormatter(
               {
-                  ...ACCENTURE_DEFAULT_CONFIG,
+                  ...ACCENT_DEFAULT_CONFIG,
                   tabSize: 2,
                   continuationIndent: 4
               });
@@ -175,7 +175,7 @@ describe(
         'JavaFormatter should normalize missing assignment spaces and excessive parenthesis spaces',
         () => {
             const messyCode = [
-            'package com.accenture.controller;',
+            'package com.accent.controller;',
             'public class ProductController {',
             '  public Object create() {',
             '    final var product = this.productService.create(request);',
@@ -186,7 +186,7 @@ describe(
         ].join('\n');
             const formatter = new JavaFormatter(
               {
-                  ...ACCENTURE_DEFAULT_CONFIG,
+                  ...ACCENT_DEFAULT_CONFIG,
                   tabSize: 2,
                   continuationIndent: 4
               });
@@ -206,7 +206,7 @@ describe(
               'test-formatter.xml');
             fs.writeFileSync(
               tempXmlPath,
-              generateAccentureXmlConfig(),
+              generateAccentXmlConfig(),
               'utf8');
             try {
                 const config = parseEclipseXmlConfig(tempXmlPath);

@@ -6,7 +6,7 @@
   "publisher": "LemuelAdane",
   "repository": {
     "type": "git",
-    "url": "https://github.com/accenture/vscode-java-formatter.git"
+    "url": "https://github.com/accent/vscode-java-formatter.git"
   },
   "icon": "icon.png",
   "engines": {
@@ -19,7 +19,7 @@
   "keywords": [
     "java",
     "formatter",
-    "accenture",
+    "accent",
     "code style",
     "redhat",
     "formatting",
@@ -33,32 +33,32 @@
   "contributes": {
     "commands": [
       {
-        "command": "accentureJava.format.document",
+        "command": "accent.java.format.document",
         "title": "Accent Java Formatter: Format Document",
         "category": "Java Formatter"
       },
       {
-        "command": "accentureJava.format.selection",
+        "command": "accent.java.format.selection",
         "title": "Accent Java Formatter: Format Selection",
         "category": "Java Formatter"
       },
       {
-        "command": "accentureJava.format.organizeImports",
+        "command": "accent.java.format.organizeImports",
         "title": "Accent Java Formatter: Organize Imports",
         "category": "Java Formatter"
       },
       {
-        "command": "accentureJava.format.selectProfile",
+        "command": "accent.java.format.selectProfile",
         "title": "Accent Java Formatter: Select Formatting Profile",
         "category": "Java Formatter"
       },
       {
-        "command": "accentureJava.format.exportConfig",
+        "command": "accent.java.format.exportConfig",
         "title": "Accent Java Formatter: Export Default Formatter XML Config",
         "category": "Java Formatter"
       },
       {
-        "command": "accentureJava.format.setAsDefault",
+        "command": "accent.java.format.setAsDefault",
         "title": "Accent Java Formatter: Set as Default Java Formatter",
         "category": "Java Formatter"
       }
@@ -67,12 +67,12 @@
       "type": "object",
       "title": "Accent Java Formatter",
       "properties": {
-        "accentureJava.format.enabled": {
+        "accent.java.format.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Enable or disable Accent Java Formatter for Java files."
         },
-        "accentureJava.format.preset": {
+        "accent.java.format.preset": {
           "type": "string",
           "enum": [
             "A Standard",
@@ -83,52 +83,52 @@
           "default": "A Standard",
           "description": "Pre-configured Java formatting style profile."
         },
-        "accentureJava.format.settings.url": {
+        "accent.java.format.settings.url": {
           "type": "string",
           "default": "",
           "description": "Path or URL to custom Eclipse JDT Java Formatter XML settings file."
         },
-        "accentureJava.format.settings.profile": {
+        "accent.java.format.settings.profile": {
           "type": "string",
           "default": "",
           "description": "Specific profile name to use from the Eclipse JDT XML settings file."
         },
-        "accentureJava.format.tabSize": {
+        "accent.java.format.tabSize": {
           "type": "integer",
           "default": 4,
           "description": "Number of spaces per indentation level."
         },
-        "accentureJava.format.insertSpaces": {
+        "accent.java.format.insertSpaces": {
           "type": "boolean",
           "default": true,
           "description": "Use spaces instead of tabs for indentation."
         },
-        "accentureJava.format.maxLineLength": {
+        "accent.java.format.maxLineLength": {
           "type": "integer",
           "default": 70,
           "description": "Maximum character length per line before wrapping."
         },
-        "accentureJava.format.comments.enabled": {
+        "accent.java.format.comments.enabled": {
           "type": "boolean",
           "default": true,
           "description": "Format line, block, and Javadoc comments."
         },
-        "accentureJava.format.imports.organizeOnFormat": {
+        "accent.java.format.imports.organizeOnFormat": {
           "type": "boolean",
           "default": true,
           "description": "Automatically sort and clean up Java import statements when formatting."
         },
-        "accentureJava.format.onSave": {
+        "accent.java.format.onSave": {
           "type": "boolean",
           "default": false,
           "description": "Automatically format Java document on save."
         },
-        "accentureJava.format.formatOnChange": {
+        "accent.java.format.formatOnChange": {
           "type": "boolean",
           "default": false,
           "description": "Automatically trigger Accent Java Formatter when Java code changes in the editor."
         },
-        "accentureJava.format.continuationIndent": {
+        "accent.java.format.continuationIndent": {
           "type": "integer",
           "default": 2,
           "minimum": 0,

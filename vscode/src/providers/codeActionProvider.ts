@@ -17,7 +17,7 @@ export class JavaCodeActionProvider
           'Organize Java Imports (A)',
           vscode.CodeActionKind.SourceOrganizeImports);
         organizeImportsAction.command = {
-            command: 'accentureJava.format.organizeImports',
+            command: 'accent.java.format.organizeImports',
             title: 'Organize Imports',
             arguments: [document.uri]
         };
@@ -27,7 +27,7 @@ export class JavaCodeActionProvider
           'Format Java Document (A)',
           vscode.CodeActionKind.SourceFixAll);
         formatDocumentAction.command = {
-            command: 'accentureJava.format.document',
+            command: 'accent.java.format.document',
             title: 'Format Document',
             arguments: [document.uri]
         };

@@ -140,20 +140,20 @@ Module.prototype.require = function(request: string) {
                       '../formatter/config');
                     const { organizeJavaImports } = require(
                       '../formatter/organizeImports');
-                    if (cmd === 'accentureJava.format.setAsDefault') {
+                    if (cmd === 'accent.java.format.setAsDefault') {
                         configStore.set(
                           '[java].editor.defaultFormatter',
                           'accent-java-formatter');
                         return;
                     }
                     if (!activeEditor) return;
-                    if (cmd === 'accentureJava.format.document') {
+                    if (cmd === 'accent.java.format.document') {
                         const formatter = new JavaFormatter(
                           getFormatterConfig());
                         activeEditor.document._text
                           = formatter.formatDocument(
                             activeEditor.document.getText());
-                    } else if (cmd === 'accentureJava.format.organizeImports') {
+                    } else if (cmd === 'accent.java.format.organizeImports') {
                         const lines = activeEditor.document.getText()
                           .split('\n');
                         const res = organizeJavaImports(lines);
@@ -173,7 +173,7 @@ Module.prototype.require = function(request: string) {
                                 .join(
                                   '\n');
                         }
-                    } else if (cmd === 'accentureJava.format.selection') {
+                    } else if (cmd === 'accent.java.format.selection') {
                         const formatter = new JavaFormatter(
                           getFormatterConfig());
                         activeEditor.document._text

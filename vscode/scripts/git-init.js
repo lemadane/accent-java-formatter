@@ -53,7 +53,7 @@ async function initGitRepo() {
           dir,
           author: {
               name: 'A Developer',
-              email: 'dev@accenture.com'
+              email: 'dev@accent.com'
           },
           message: 'Initial commit: Accent Java Formatter v1.0.0 with 2-space default indentation and format-on-change support'
       });
