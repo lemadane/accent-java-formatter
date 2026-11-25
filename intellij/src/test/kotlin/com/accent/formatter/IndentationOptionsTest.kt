@@ -4,6 +4,20 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class IndentationOptionsTest {
+    @Test
+    fun returnConcatenationContinuationWidths() {
+        for (continuationIndent in listOf(0, 2, 6)) {
+            for (insertSpaces in listOf(true, false)) {
+                val formatter = AccentJavaFormatter(AccentFormatterConfig(continuationIndent = continuationIndent, insertSpaces = insertSpaces))
+                val source = "class Sample {\nString url() {\nreturn normalizedBaseUrl\n+ \"/transform/\"\n+ projectName.trim();\n}\n}\n"
+                fun indent(columns: Int) = if (insertSpaces) " ".repeat(columns) else "\t".repeat(columns / 4) + " ".repeat(columns % 4)
+                val expected = "class Sample {\n${indent(4)}String url() {\n${indent(8)}return normalizedBaseUrl\n${indent(8 + continuationIndent)}+ \"/transform/\"\n${indent(8 + continuationIndent)}+ projectName.trim();\n${indent(4)}}\n}\n"
+                assertEquals(expected, formatter.formatDocument(source))
+                assertEquals(expected, formatter.formatDocument(expected))
+            }
+        }
+    }
+
     private val source = "class Sample {\nvoid run() {\nprint(convert(resolve(value)));\n}\n}\n"
 
     @Test

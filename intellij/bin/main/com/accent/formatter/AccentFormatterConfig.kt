@@ -5,5 +5,6 @@ data class AccentFormatterConfig(
     val tabSize: Int = 4,
     val insertSpaces: Boolean = true,
     val braceStyle: String = "sameLine",
-    val organizeImportsOnFormat: Boolean = true
+    val organizeImportsOnFormat: Boolean = true,
+    val continuationIndent: Int = 2
 )

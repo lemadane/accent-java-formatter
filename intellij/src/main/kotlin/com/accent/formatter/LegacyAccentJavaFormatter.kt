@@ -497,7 +497,8 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
                                 previousThirdNonEmptyLine.endsWith("="))
 
             val isContinuationLine = isAssignRhs || line.startsWith("=") || line.startsWith(".") || ((line.startsWith("?") || line.startsWith(":")) && !isAssignmentTernaryBranchLine) || line.startsWith("extends") || line.startsWith("implements") || line.startsWith("throws")
-            val extraIndent = if (isContinuationLine || (parenColumns > 0 && line.startsWith("+"))) continuationIndent else 0
+            val isOperatorContinuation = line.startsWith("+") && !line.startsWith("++")
+            val extraIndent = if (isContinuationLine || isOperatorContinuation) continuationIndent else 0
             val indentColumns = maxOf(0, blockColumns + parenColumns + extraIndent)
 
             if (line.startsWith("/**")) {

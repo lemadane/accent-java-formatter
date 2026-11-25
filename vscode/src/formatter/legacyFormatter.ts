@@ -289,8 +289,8 @@ export class LegacyJavaFormatter {
             const parenColumns = parenColumnsStack.length > 0 ? parenColumnsStack[parenColumnsStack.length - 1] : 0;
             const isContinuationLine = isAssignRhs || line.startsWith('=') || line.startsWith('.') || line.startsWith('?') || line.startsWith(':') || line.startsWith('extends') || line.startsWith('implements') || line.startsWith('throws');
             const extraIndent = isContinuationLine ? continuationIndent : 0;
-            const isOperatorContinuationInParen = parenColumns > 0 && line.startsWith('+');
-            const indentColumns = isOperatorContinuationInParen
+            const isOperatorContinuation = line.startsWith('+') && !line.startsWith('++');
+            const indentColumns = isOperatorContinuation
                 ? Math.max(0, blockColumns + parenColumns + continuationIndent)
                 : Math.max(0, blockColumns + parenColumns + extraIndent);
 

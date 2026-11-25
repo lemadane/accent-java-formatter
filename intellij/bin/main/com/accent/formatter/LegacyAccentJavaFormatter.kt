@@ -3,7 +3,8 @@ package com.accent.formatter
 class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormatterConfig()) {
 
     fun formatDocument(sourceCode: String): String {
-        var lines = sourceCode.split("\r\n", "\n")
+        val protectedCode = StructuralFormatting.protectNonCode(sourceCode)
+        var lines = protectedCode.source.split("\r\n", "\n")
 
         if (config.organizeImportsOnFormat) {
             val importResult = AccentImportOrganizer.organizeJavaImports(lines)
@@ -16,484 +17,51 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
         }
 
         lines = preprocessFormattingRules(lines)
-        return formatCodeLines(lines)
+        return protectedCode.restore(formatCodeLines(lines))
     }
 
     private fun preprocessFormattingRules(lines: List<String>): List<String> {
         var result = lines
         result = applyRule5Clauses(result)
-        result = applyRule4MethodParams(result)
-        result = applyRule1Annotations(result)
+        // Declarations and calls share the recursive formatter.
+        result = StructuralFormatting.formatAnnotations(result.joinToString("\n")).split("\n")
         result = applyRuleTernaryOperators(result)
         result = applyRule7AssignmentRhs(result)
-        result = applyRuleNestedLambdaCalls(result)
-        result = applyRule6MethodCalls(result)
-        result = applyRule8ChainedCalls(result)
+        // Nested calls are handled recursively.
+        result = StructuralFormatting.formatCalls(StructuralFormatting.expandBlocks(result.joinToString("\n")), config.maxLineLength, config.tabSize, continuationSize = config.continuationIndent).split("\n")
+        // Chain boundaries are handled together with calls.
         return result
-    }
-
-    private fun applyRule1Annotations(lines: List<String>): List<String> {
-        val output = mutableListOf<String>()
-        var inTextBlock = false
-
-        for (line in lines) {
-            if (inTextBlock) {
-                output.add(line)
-                if (line.contains("\"\"\"")) inTextBlock = false
-                continue
-            }
-            if (line.contains("\"\"\"")) {
-                val count = Regex("""\"\"\"""").findAll(line).count()
-                if (count % 2 != 0) inTextBlock = true
-            }
-
-            val trimmed = line.trim()
-            if (!trimmed.contains("@") || trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
-                output.add(line)
-                continue
-            }
-
-            if (trimmed.startsWith("@") && trimmed.contains("(") && trimmed.endsWith(")") && trimmed.length >= config.maxLineLength) {
-                val openIdx = trimmed.indexOf('(')
-                val closeIdx = trimmed.lastIndexOf(')')
-                if (openIdx != -1 && closeIdx > openIdx) {
-                    val prefix = trimmed.substring(0, openIdx + 1)
-                    val body = trimmed.substring(openIdx + 1, closeIdx)
-                    val suffix = trimmed.substring(closeIdx)
-                    val args = splitParameters(body).map { it.trim() }
-                    if (args.size > 1) {
-                        output.add(prefix)
-                        for (aIdx in args.indices) {
-                            if (aIdx < args.size - 1) {
-                                output.add("${args[aIdx]},")
-                            } else {
-                                output.add(args[aIdx])
-                            }
-                        }
-                        output.add(suffix)
-                        continue
-                    }
-                }
-            }
-
-            if (!trimmed.startsWith("@") || trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*") || (trimmed.startsWith("@") && trimmed.endsWith("("))) {
-                output.add(line)
-                continue
-            }
-
-            val annotationRegex = Regex("""@\w+(\([^)]*\))?""")
-            val matches = annotationRegex.findAll(trimmed).toList()
-
-            if (matches.isEmpty() || (matches.size == 1 && matches[0].range.first == 0 && matches[0].value.length == trimmed.length)) {
-                output.add(line)
-                continue
-            }
-
-            var lastIdx = 0
-            for (m in matches) {
-                val textBefore = trimmed.substring(lastIdx, m.range.first).trim()
-                if (textBefore.isNotEmpty()) {
-                    output.add(textBefore)
-                }
-                output.add(m.value)
-                lastIdx = m.range.last + 1
-            }
-
-            val textAfter = trimmed.substring(lastIdx).trim()
-            if (textAfter.isNotEmpty()) {
-                output.add(textAfter)
-            }
-        }
-
-        return output
     }
 
     private fun applyRule5Clauses(lines: List<String>): List<String> {
         val output = mutableListOf<String>()
-        var inTextBlock = false
+        var angleDepth = 0
+        val clauseRegex = Regex("""^(extends|implements|throws)\b""")
 
         for (line in lines) {
-            if (inTextBlock) {
-                output.add(line)
-                if (line.contains("\"\"\"")) inTextBlock = false
-                continue
-            }
-            if (line.contains("\"\"\"")) {
-                val count = Regex("""\"\"\"""").findAll(line).count()
-                if (count % 2 != 0) inTextBlock = true
-            }
-
-            val trimmed = line.trim()
-            if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
-                output.add(line)
-                continue
-            }
-
-            val codeWithoutStrings = trimmed.replace(Regex("""("([^"\\]|\\.)*"|'([^'\\]|\\.)*')"""), "\"\"")
-            val clauseRegex = Regex("""\b(extends|implements|throws)\b""")
-            val hasExtends = Regex("""\bextends\b""").containsMatchIn(codeWithoutStrings) && !codeWithoutStrings.startsWith("extends")
-            val hasImplements = Regex("""\bimplements\b""").containsMatchIn(codeWithoutStrings) && !codeWithoutStrings.startsWith("implements")
-            val hasThrows = Regex("""\bthrows\b""").containsMatchIn(codeWithoutStrings) && !codeWithoutStrings.startsWith("throws")
-
-            if (!hasExtends && !hasImplements && !hasThrows) {
-                output.add(line)
-                continue
-            }
-
-            val parts = mutableListOf<String>()
-            var lastIdx = 0
-            for (m in clauseRegex.findAll(trimmed)) {
-                val partBefore = trimmed.substring(lastIdx, m.range.first).trim()
-                if (partBefore.isNotEmpty()) parts.add(partBefore)
-                lastIdx = m.range.first
-            }
-            val finalPart = trimmed.substring(lastIdx).trim()
-            if (finalPart.isNotEmpty()) parts.add(finalPart)
-
-            output.addAll(parts)
-        }
-
-        return output
-    }
-
-    private fun applyRule4MethodParams(lines: List<String>): List<String> {
-        val output = mutableListOf<String>()
-        var i = 0
-
-        while (i < lines.size) {
-            val line = lines[i]
-            val trimmed = line.trim()
-
-            val isMethodOrConstructorStart =
-                trimmed.contains("(") &&
-                !trimmed.contains("record ") && !trimmed.contains("class ") && !trimmed.contains("interface ") &&
-                (trimmed.startsWith("public ") || trimmed.startsWith("protected ") || trimmed.startsWith("private ") || trimmed.startsWith("abstract ")) &&
-                !trimmed.startsWith("if") &&
-                !trimmed.startsWith("for") &&
-                !trimmed.startsWith("while") &&
-                !trimmed.startsWith("switch") &&
-                !trimmed.startsWith("catch") &&
-                !trimmed.startsWith("return") &&
-                !trimmed.contains(" = ")
-
-            if (isMethodOrConstructorStart) {
-                var j = i + 1
-                var fullText = trimmed
-
-                while (j < lines.size && !fullText.contains(") {") && !fullText.endsWith("{") && !fullText.endsWith(");") && !fullText.endsWith(")")) {
-                    fullText += " " + lines[j].trim()
-                    j++
-                }
-
-                val openParenIdx = fullText.indexOf('(')
-                val closeParenIdx = fullText.lastIndexOf(')')
-
-                if (openParenIdx != -1 && closeParenIdx > openParenIdx) {
-                    val headerPrefix = fullText.substring(0, openParenIdx).trim()
-                    val paramsContent = fullText.substring(openParenIdx + 1, closeParenIdx).trim()
-                    val headerSuffix = fullText.substring(closeParenIdx + 1).trim()
-
-                    if (paramsContent.isNotEmpty()) {
-                        val processedParams = splitParameters(paramsContent).map { it.trim() }
-
-                        if (processedParams.size > 1) {
-                            output.add("$headerPrefix(")
-                            for (pIdx in processedParams.indices) {
-                                val isLast = pIdx == processedParams.size - 1
-                                if (isLast) {
-                                    output.add(processedParams[pIdx])
-                                    output.add(")${if (headerSuffix.isNotEmpty()) " $headerSuffix" else ""}")
-                                } else {
-                                    output.add("${processedParams[pIdx]},")
-                                }
-                            }
-                            i = j
-                            continue
-                        } else {
-                            val singleLineHeader = "$headerPrefix(${processedParams[0]})${if (headerSuffix.isNotEmpty()) " $headerSuffix" else ""}"
-                            if (singleLineHeader.length + 4 >= config.maxLineLength) {
-                                output.add("$headerPrefix(")
-                                output.add(processedParams[0])
-                                output.add(")${if (headerSuffix.isNotEmpty()) " $headerSuffix" else ""}")
-                            } else {
-                                output.add(singleLineHeader)
-                            }
-                            i = j
-                            continue
-                        }
-                    }
-                }
-            }
-
-            output.add(line)
-            i++
-        }
-
-        return output
-    }
-
-    private fun applyRule6MethodCalls(lines: List<String>): List<String> {
-        val output = mutableListOf<String>()
-
-        for (line in lines) {
-            var trimmed = line.trim()
-            if (trimmed.startsWith("NESTED_CALL:")) {
-                output.add(line)
-                continue
-            }
-            var isRhs = false
-            if (trimmed.startsWith("ASSIGN_RHS:")) {
-                isRhs = true
-                trimmed = trimmed.substring("ASSIGN_RHS:".length).trim()
-            }
-
-            val isMethodCall =
-                trimmed.contains("(") &&
-                (trimmed.endsWith(");") || trimmed.endsWith(")") || trimmed.endsWith("),")) &&
-                !trimmed.startsWith("@") &&
-                !trimmed.startsWith("public ") &&
-                !trimmed.startsWith("private ") &&
-                !trimmed.startsWith("protected ") &&
-                !trimmed.startsWith("class ") &&
-                !trimmed.startsWith("if ") &&
-                !trimmed.startsWith("for ") &&
-                !trimmed.startsWith("while ")
-
-            if (isMethodCall) {
-                val openParenIdx = trimmed.indexOf('(')
-                val closeParenIdx = trimmed.lastIndexOf(')')
-
-                if (openParenIdx != -1 && closeParenIdx > openParenIdx) {
-                    val callPrefix = trimmed.substring(0, openParenIdx).trim()
-                    val argsContent = trimmed.substring(openParenIdx + 1, closeParenIdx).trim()
-                    val callSuffix = trimmed.substring(closeParenIdx + 1).trim()
-
-                    if (argsContent.isNotEmpty()) {
-                        val args = splitParameters(argsContent)
-                        if (args.size > 1) {
-                            val prefix = if (isRhs) "ASSIGN_RHS:$callPrefix" else callPrefix
-                            output.add("$prefix(")
-                            for (aIdx in args.indices) {
-                                val isLast = aIdx == args.size - 1
-                                if (isLast) {
-                                    output.add(args[aIdx].trim())
-                                    output.add(")$callSuffix")
-                                } else {
-                                    output.add("${args[aIdx].trim()},")
-                                }
-                            }
-                            continue
-                        } else if (args.size == 1 && line.length >= config.maxLineLength) {
-                            val prefix = if (isRhs) "ASSIGN_RHS:$callPrefix" else callPrefix
-                            output.add("$prefix(")
-                            output.add("${args[0].trim()})$callSuffix")
-                            continue
-                        }
-                    }
-                }
-            }
-
-            output.add(if (isRhs) "ASSIGN_RHS:$trimmed" else line)
-        }
-
-        return output
-    }
-
-    private fun applyRuleNestedLambdaCalls(lines: List<String>): List<String> {
-        val output = mutableListOf<String>()
-
-        for (line in lines) {
-            val trimmed = line.trim()
-            if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*") || trimmed.startsWith("@")) {
-                output.add(line)
-                continue
-            }
-
-            val outerOpen = trimmed.indexOf('(')
-            val outerClose = findMatchingParen(trimmed, outerOpen)
-            if (outerOpen < 0 || outerClose < 0) {
-                output.add(line)
-                continue
-            }
-
-            val lambdaArgument = trimmed.substring(outerOpen + 1, outerClose).trim()
-            val arrowIndex = lambdaArgument.indexOf("->")
-            if (arrowIndex < 0) {
-                output.add(line)
-                continue
-            }
-
-            val lambdaParameters = lambdaArgument.substring(0, arrowIndex).trim()
-            val lambdaBody = lambdaArgument.substring(arrowIndex + 2).trim()
-            val rootCall = parseSingleArgumentCall(lambdaBody)
-            if (lambdaParameters.isEmpty() || rootCall == null || !containsNestedCall(rootCall.argument)) {
-                output.add(line)
-                continue
-            }
-
-            val prefix = trimmed.substring(0, outerOpen).trim()
-            val trailingText = trimmed.substring(outerClose + 1)
-            output.add("$prefix(")
-            output.add("NESTED_CALL:$lambdaParameters -> ${rootCall.callee}(")
-            appendNestedCallArguments(rootCall.argument, ")$trailingText", output)
-        }
-
-        return output
-    }
-
-    private data class NestedCall(val callee: String, val argument: String)
-
-    private fun parseSingleArgumentCall(expression: String): NestedCall? {
-        val openParen = expression.indexOf('(')
-        val closeParen = findMatchingParen(expression, openParen)
-        if (openParen <= 0 || closeParen != expression.lastIndex) return null
-
-        val callee = expression.substring(0, openParen).trim()
-        val args = splitParameters(expression.substring(openParen + 1, closeParen))
-        if (callee.isEmpty() || args.size != 1) return null
-        return NestedCall(callee, args[0].trim())
-    }
-
-    private fun containsNestedCall(expression: String): Boolean = parseSingleArgumentCall(expression) != null
-
-    private fun appendNestedCallArguments(expression: String, closingSuffix: String, output: MutableList<String>) {
-        val nestedCall = parseSingleArgumentCall(expression)
-        if (nestedCall != null) {
-            output.add("NESTED_CALL:${nestedCall.callee}(")
-            appendNestedCallArguments(nestedCall.argument, ")$closingSuffix", output)
-        } else {
-            output.add("$expression)$closingSuffix")
-        }
-    }
-
-    private fun findMatchingParen(text: String, openParen: Int): Int {
-        if (openParen < 0 || text.getOrNull(openParen) != '(') return -1
-
-        var depth = 0
-        var quote: Char? = null
-        for (index in openParen until text.length) {
-            val ch = text[index]
-            if (quote != null) {
-                if (ch == quote && (index == 0 || text[index - 1] != '\\')) quote = null
-            } else if (ch == '"' || ch == '\'') {
-                quote = ch
-            } else if (ch == '(') {
-                depth++
-            } else if (ch == ')') {
-                depth--
-                if (depth == 0) return index
-            }
-        }
-
-        return -1
-    }
-
-    private fun applyRule8ChainedCalls(lines: List<String>): List<String> {
-        val output = mutableListOf<String>()
-        var inTextBlock = false
-
-        for (line in lines) {
-            if (inTextBlock) {
-                output.add(line)
-                if (line.contains("\"\"\"")) inTextBlock = false
-                continue
-            }
-            if (line.contains("\"\"\"")) {
-                val count = Regex("""\"\"\"""").findAll(line).count()
-                if (count % 2 != 0) inTextBlock = true
-            }
-
-            var trimmed = line.trim()
-            if (trimmed.startsWith("NESTED_CALL:")) {
-                output.add(line)
-                continue
-            }
-            var isRhs = false
-            if (trimmed.startsWith("ASSIGN_RHS:")) {
-                isRhs = true
-                trimmed = trimmed.substring("ASSIGN_RHS:".length).trim()
-            }
-
-            if (trimmed.startsWith("import ") || trimmed.startsWith("package ") || trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("?") || trimmed.startsWith(":")) {
-                output.add(line)
-                continue
-            }
-
-            val topLevelDotIndices = mutableListOf<Int>()
-            var parenDepth = 0
-            var inString = false
-            var stringChar = ' '
-
-            for (idx in trimmed.indices) {
-                val char = trimmed[idx]
-                if (inString) {
-                    if (char == stringChar && (idx == 0 || trimmed[idx - 1] != '\\')) {
-                        inString = false
-                    }
-                    continue
-                }
-                if (char == '"' || char == '\'') {
-                    inString = true
-                    stringChar = char
-                    continue
-                }
-                if (char == '(') parenDepth++
-                else if (char == ')') parenDepth = maxOf(0, parenDepth - 1)
-                else if (char == '.' && parenDepth == 0) {
-                    topLevelDotIndices.add(idx)
-                }
-            }
-
-            val methodDotIndices = topLevelDotIndices.filter { idx ->
-                val rest = trimmed.substring(idx)
-                Regex("""^\.[a-zA-Z0-9_]+\s*\(""").containsMatchIn(rest)
-            }
-
-            if (methodDotIndices.size >= 2) {
-                val firstDotIdx = methodDotIndices[0]
-                val part1 = trimmed.substring(0, firstDotIdx).trim()
-                val part2Raw = trimmed.substring(firstDotIdx).trim()
-
-                val prefix = if (isRhs) "ASSIGN_RHS:$part1" else part1
-                output.add(prefix)
-
-                val chainMatches = mutableListOf<Int>()
-                var pDepth = 0
-                var strIn = false
-                var sChar = ' '
-
-                for (idx in part2Raw.indices) {
-                    val char = part2Raw[idx]
-                    if (strIn) {
-                        if (char == sChar && (idx == 0 || part2Raw[idx - 1] != '\\')) strIn = false
+            var start = 0
+            var i = 0
+            while (i < line.length) {
+                val skipped = StructuralFormatting.skipNonCode(line, i)
+                if (skipped != i) { i = skipped; continue }
+                val ch = line[i]
+                // Bounds inside type parameters/arguments are not inheritance clauses.
+                if (ch == '<') angleDepth++
+                else if (ch == '>') angleDepth = maxOf(0, angleDepth - 1)
+                else if (ch in ";{}") angleDepth = 0
+                if (angleDepth == 0 && (i == 0 || !(line[i - 1].isLetterOrDigit() || line[i - 1] in "_$"))) {
+                    val clause = clauseRegex.find(line.substring(i))
+                    if (clause != null) {
+                        val before = line.substring(start, i).trim()
+                        if (before.isNotEmpty()) output.add(before)
+                        start = i
+                        i += clause.value.length
                         continue
                     }
-                    if (char == '"' || char == '\'') {
-                        strIn = true
-                        sChar = char
-                        continue
-                    }
-                    if (char == '(') pDepth++
-                    else if (char == ')') pDepth = maxOf(0, pDepth - 1)
-                    else if (char == '.' && pDepth == 0) chainMatches.add(idx)
                 }
-
-                if (chainMatches.size <= 1) {
-                    output.add(part2Raw)
-                } else {
-                    var lastIdx = 0
-                    for (k in 1 until chainMatches.size) {
-                        val chunk = part2Raw.substring(lastIdx, chainMatches[k]).trim()
-                        if (chunk.isNotEmpty()) output.add(chunk)
-                        lastIdx = chainMatches[k]
-                    }
-                    val lastChunk = part2Raw.substring(lastIdx).trim()
-                    if (lastChunk.isNotEmpty()) output.add(lastChunk)
-                }
-                continue
+                i++
             }
-
-            output.add(if (isRhs) "ASSIGN_RHS:$trimmed" else line)
+            output.add(if (start == 0) line else line.substring(start).trim())
         }
 
         return output
@@ -795,50 +363,26 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
         return -1
     }
 
-    private fun splitParameters(paramsContent: String): List<String> {
-        val result = mutableListOf<String>()
-        var current = StringBuilder()
-        var depth = 0
-
-        for (i in paramsContent.indices) {
-            val char = paramsContent[i]
-            if (char == '<' || char == '(' || char == '[') {
-                depth++
-                current.append(char)
-            } else if (char == '>' || char == ')' || char == ']') {
-                depth = maxOf(0, depth - 1)
-                current.append(char)
-            } else if (char == ',' && depth == 0) {
-                result.add(current.toString().trim())
-                current = StringBuilder()
-            } else {
-                current.append(char)
-            }
-        }
-
-        if (current.toString().trim().isNotEmpty()) {
-            result.add(current.toString().trim())
-        }
-
-        return result
-    }
-
     private fun formatCodeLines(lines: List<String>): String {
         val formatted = formatLinesWithIndent(lines, 0)
         return postProcessBlankLines(formatted).joinToString("\n")
     }
 
     private fun formatLinesWithIndent(lines: List<String>, initialIndentLevel: Int): List<String> {
-        val indentStr = if (config.insertSpaces) " ".repeat(config.tabSize) else "\t"
-        var blockIndent = initialIndentLevel
-        val parenIndentStack = mutableListOf<Int>()
+        val continuationIndent = config.continuationIndent
+        fun indentation(columns: Int): String = if (config.insertSpaces) " ".repeat(columns)
+            else "\t".repeat(columns / config.tabSize) + " ".repeat(columns % config.tabSize)
+        var blockColumns = initialIndentLevel * config.tabSize
+        val parenColumnsStack = mutableListOf<Int>()
         val outputLines = mutableListOf<String>()
 
         var inJavadoc = false
         var inBlockComment = false
         var inTextBlock = false
 
+        var consumedLine = -1
         for (i in lines.indices) {
+            if (i == consumedLine) continue
             if (inTextBlock) {
                 outputLines.add(lines[i])
                 if (lines[i].contains("\"\"\"")) inTextBlock = false
@@ -846,6 +390,23 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
             }
 
             var line = lines[i].trim()
+
+            // Lay out assignment call headers using their final indentation.
+            val callHeader = Regex("""^(?:new\s+)?[\w$.]+(?:<[^;{}]*>)?\s*\($""")
+            if (line.endsWith(" =") && i + 1 < lines.size) {
+                val call = lines[i + 1].trim().removePrefix("ASSIGN_RHS:").trim()
+                if (callHeader.matches(call)) {
+                    line = "$line $call"
+                    consumedLine = i + 1
+                }
+            }
+            val assignment = findAssignmentOperatorIndex(line)
+            val columns = blockColumns + (parenColumnsStack.lastOrNull() ?: 0)
+            if (assignment >= 0 && callHeader.matches(line.substring(assignment + 3).trim()) &&
+                columns + line.length > config.maxLineLength) {
+                outputLines.add(indentation(columns) + line.substring(0, assignment).trimEnd())
+                line = line.substring(assignment + 1)
+            }
 
             if (line.isEmpty()) {
                 outputLines.add("")
@@ -871,14 +432,14 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
 
             val startsWithClosingBrace = line.startsWith("}")
             if (startsWithClosingBrace) {
-                blockIndent = maxOf(0, blockIndent - 1)
+                blockColumns = maxOf(0, blockColumns - config.tabSize)
             }
             val startsWithClosingParen = line.startsWith(")") || line.startsWith(");")
-            if (startsWithClosingParen && parenIndentStack.isNotEmpty()) {
-                parenIndentStack.removeAt(parenIndentStack.size - 1)
+            if (startsWithClosingParen && parenColumnsStack.isNotEmpty()) {
+                parenColumnsStack.removeAt(parenColumnsStack.size - 1)
             }
 
-            val parenIndent = if (parenIndentStack.isNotEmpty()) parenIndentStack.last() else 0
+            val parenColumns = if (parenColumnsStack.isNotEmpty()) parenColumnsStack.last() else 0
             val previousNonEmptyLine = run {
                 var j = i - 1
                 var found = ""
@@ -936,20 +497,21 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
                                 previousThirdNonEmptyLine.endsWith("="))
 
             val isContinuationLine = isAssignRhs || line.startsWith("=") || line.startsWith(".") || ((line.startsWith("?") || line.startsWith(":")) && !isAssignmentTernaryBranchLine) || line.startsWith("extends") || line.startsWith("implements") || line.startsWith("throws")
-            val extraIndent = if (isAssignRhs) 2 else if (isContinuationLine) 1 else 0
-            val lineIndentLevel = maxOf(0, blockIndent + parenIndent + extraIndent)
+            val isOperatorContinuation = line.startsWith("+") && !line.startsWith("++")
+            val extraIndent = if (isContinuationLine || isOperatorContinuation) continuationIndent else 0
+            val indentColumns = maxOf(0, blockColumns + parenColumns + extraIndent)
 
             if (line.startsWith("/**")) {
                 inJavadoc = true
-                outputLines.add(indentStr.repeat(lineIndentLevel) + line)
+                outputLines.add(indentation(indentColumns) + line)
                 if (line.endsWith("*/")) inJavadoc = false
                 continue
             }
             if (inJavadoc) {
                 if (line.startsWith("*")) {
-                    outputLines.add(indentStr.repeat(lineIndentLevel) + " " + line)
+                    outputLines.add(indentation(indentColumns) + " " + line)
                 } else {
-                    outputLines.add(indentStr.repeat(lineIndentLevel) + line)
+                    outputLines.add(indentation(indentColumns) + line)
                 }
                 if (line.contains("*/")) inJavadoc = false
                 continue
@@ -957,18 +519,18 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
 
             if (line.startsWith("/*")) {
                 inBlockComment = true
-                outputLines.add(indentStr.repeat(lineIndentLevel) + line)
+                outputLines.add(indentation(indentColumns) + line)
                 if (line.endsWith("*/")) inBlockComment = false
                 continue
             }
             if (inBlockComment) {
-                outputLines.add(indentStr.repeat(lineIndentLevel) + line)
+                outputLines.add(indentation(indentColumns) + line)
                 if (line.contains("*/")) inBlockComment = false
                 continue
             }
 
             if (line.startsWith("//")) {
-                outputLines.add(indentStr.repeat(lineIndentLevel) + line)
+                outputLines.add(indentation(indentColumns) + line)
                 continue
             }
 
@@ -979,7 +541,7 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
             line = normalizeCommaSpaces(line)
             line = normalizeBraceSpaces(line)
 
-            val currentLineIndent = indentStr.repeat(lineIndentLevel)
+            val currentLineIndent = indentation(indentColumns)
             val fullLine = currentLineIndent + line
 
             outputLines.add(fullLine)
@@ -989,29 +551,29 @@ class LegacyAccentJavaFormatter(val config: AccentFormatterConfig = AccentFormat
             for (chIdx in codeWithoutStrings.indices) {
                 val char = codeWithoutStrings[chIdx]
                 if (char == '{') {
-                    blockIndent++
+                    blockColumns += config.tabSize
                 } else if (char == '}') {
                     if (!startsWithClosingBrace) {
-                        blockIndent = maxOf(0, blockIndent - 1)
+                        blockColumns = maxOf(0, blockColumns - config.tabSize)
                     }
                 } else if (char == '(' || char == '[') {
                     val textAfterParen = codeWithoutStrings.substring(chIdx + 1).trim()
                     val hasCodeAfterParen = textAfterParen.isNotEmpty() && !textAfterParen.startsWith("//")
                     val addedParenIndent = if (hasCodeAfterParen) {
-                        if (isNestedCall && parenIndentStack.isNotEmpty()) {
-                            parenIndentStack.last() + 1
-                        } else if (parenIndentStack.isNotEmpty()) {
-                            parenIndentStack.last()
+                        if (isNestedCall && parenColumnsStack.isNotEmpty()) {
+                            parenColumnsStack.last() + continuationIndent
+                        } else if (parenColumnsStack.isNotEmpty()) {
+                            parenColumnsStack.last()
                         } else {
-                            1
+                            continuationIndent
                         }
                     } else {
-                        lineIndentLevel + 1 - blockIndent
+                        indentColumns + continuationIndent - blockColumns
                     }
-                    parenIndentStack.add(addedParenIndent)
+                    parenColumnsStack.add(addedParenIndent)
                 } else if (char == ')' || char == ']') {
-                    if (!startsWithClosingParen && parenIndentStack.isNotEmpty()) {
-                        parenIndentStack.removeAt(parenIndentStack.size - 1)
+                    if (!startsWithClosingParen && parenColumnsStack.isNotEmpty()) {
+                        parenColumnsStack.removeAt(parenColumnsStack.size - 1)
                     }
                 }
             }

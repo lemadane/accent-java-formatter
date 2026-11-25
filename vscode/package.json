@@ -2,7 +2,7 @@
   "name": "accent-java-formatter",
   "displayName": "Accent Java Formatter",
   "description": "Enterprise-grade Java code formatting extension for Visual Studio Code.",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "publisher": "LemuelAdane",
   "repository": {
     "type": "git",

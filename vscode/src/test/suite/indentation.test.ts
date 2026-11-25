@@ -23,6 +23,20 @@ describe('Ube indentation defaults', () => {
 });
 
 describe('Independent indentation widths', () => {
+    for (const continuationIndent of [0, 2, 6]) {
+        for (const insertSpaces of [true, false]) {
+            it(`indents return concatenations by ${continuationIndent} columns with insertSpaces=${insertSpaces}`, () => {
+                const formatter = new JavaFormatter({ ...ACCENT_DEFAULT_CONFIG, continuationIndent, insertSpaces });
+                const source = 'class Sample {\nString url() {\nreturn normalizedBaseUrl\n+ "/transform/"\n+ projectName.trim();\n}\n}\n';
+                const indent = (columns: number) => insertSpaces
+                    ? ' '.repeat(columns)
+                    : '\t'.repeat(Math.floor(columns / 4)) + ' '.repeat(columns % 4);
+                const expected = `class Sample {\n${indent(4)}String url() {\n${indent(8)}return normalizedBaseUrl\n${indent(8 + continuationIndent)}+ "/transform/"\n${indent(8 + continuationIndent)}+ projectName.trim();\n${indent(4)}}\n}\n`;
+                assert.strictEqual(formatter.formatDocument(source), expected);
+                assert.strictEqual(formatter.formatDocument(expected), expected);
+            });
+        }
+    }
     const source = 'class Sample {\nvoid run() {\nprint(convert(resolve(value)));\n}\n}\n';
     it('keeps two-space continuations with two-space blocks', () => {
         const formatter = new JavaFormatter({ ...ACCENT_DEFAULT_CONFIG, tabSize: 2 });

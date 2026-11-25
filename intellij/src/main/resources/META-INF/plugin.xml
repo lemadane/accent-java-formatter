@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>com.accent.java.formatter</id>
+    <id>com.accenture.java.formatter</id>
     <name>Accent Java Formatter</name>
     <vendor email="support@accent.com" url="https://accent.com">LemuelAdane</vendor>
 
